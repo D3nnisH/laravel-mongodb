@@ -2,11 +2,15 @@
     "name": "jenssegers/mongodb",
     "description": "A MongoDB based Eloquent model and Query builder for Laravel (Moloquent)",
     "keywords": ["laravel","eloquent","mongodb","mongo","database","model","moloquent"],
-    "homepage": "https://github.com/jenssegers/laravel-mongodb",
+    "homepage": "https://github.com/D3nnisH/laravel-mongodb",
     "authors": [
         {
             "name": "Jens Segers",
             "homepage": "https://jenssegers.com"
+        },
+        {
+            "name": "Dennis Heller",
+            "homepage": "https://dennis-heller.de"
         }
     ],
     "license" : "MIT",
