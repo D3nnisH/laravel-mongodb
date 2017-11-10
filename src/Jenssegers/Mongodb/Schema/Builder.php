@@ -107,6 +107,14 @@ class Builder extends \Illuminate\Database\Schema\Builder
     }
 
     /**
+     * @inheritDoc
+     */
+    public function dropAllTables()
+    {
+        $this->connection->getMongoDB()->drop();
+    }
+
+    /**
      * @inheritdoc
      */
     protected function createBlueprint($collection, Closure $callback = null)
