@@ -109,7 +109,7 @@ class Builder extends \Illuminate\Database\Schema\Builder
     /**
      * @inheritDoc
      */
-    public function dropAllTables()
+    public function dropDatabase()
     {
         $this->connection->getMongoDB()->drop();
     }
