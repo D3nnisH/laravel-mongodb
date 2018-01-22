@@ -198,7 +198,7 @@ class Builder extends BaseBuilder
      */
     public function find($id, $columns = [])
     {
-        return $this->where($this->getKeyName(), '=', $this->convertKey($id))->first($columns);
+        return $this->where('_id', '=', $this->convertKey($id))->first($columns);
     }
 
     /**
@@ -920,13 +920,6 @@ class Builder extends BaseBuilder
             }
 
             // Convert DateTime values to UTCDateTime.
-            if (isset($where['values'])) {
-                array_walk_recursive($where['values'], function (&$item, $key) {
-                    if ($item instanceof DateTime) {
-                        $item = new UTCDateTime($item->getTimestamp() * 1000);
-                    }
-                });
-            }
             if (isset($where['value'])) {
                 if (is_array($where['value'])) {
                     array_walk_recursive($where['value'], function (&$item, $key) {
@@ -939,6 +932,12 @@ class Builder extends BaseBuilder
                         $where['value'] = new UTCDateTime($where['value']->getTimestamp() * 1000);
                     }
                 }
+            } elseif (isset($where['values'])) {
+                array_walk_recursive($where['values'], function (&$item, $key) {
+                    if ($item instanceof DateTime) {
+                        $item = new UTCDateTime($item->getTimestamp() * 1000);
+                    }
+                });
             }
 
             // The next item in a "chain" of wheres devices the boolean of the
