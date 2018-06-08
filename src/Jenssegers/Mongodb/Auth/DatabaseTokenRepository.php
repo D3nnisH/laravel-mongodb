@@ -20,17 +20,19 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
     /**
      * @inheritdoc
      */
-    protected function tokenExpired($token)
+    protected function tokenExpired($createdAt)
     {
         // Convert UTCDateTime to a date string.
-        if ($token instanceof UTCDateTime) {
-            $date = $token->toDateTime();
-        } elseif (is_array($token) && isset($token['date'])) {
-            $date = new DateTime($token['date'], new DateTimeZone(isset($token['timezone']) ? $token['timezone'] : 'UTC'));
+        if ($createdAt instanceof UTCDateTime) {
+            $date = $createdAt->toDateTime();
+            $date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            $createdAt = $date->format('Y-m-d H:i:s');
+        } elseif (is_array($createdAt) and isset($createdAt['date'])) {
+            $date = new DateTime($createdAt['date'], new DateTimeZone(isset($createdAt['timezone']) ? $createdAt['timezone'] : 'UTC'));
+            $date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            $createdAt = $date->format('Y-m-d H:i:s');
         }
-        $date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-        $token = $date->format('Y-m-d H:i:s');
 
-        return parent::tokenExpired($token);
+        return parent::tokenExpired($createdAt);
     }
 }
