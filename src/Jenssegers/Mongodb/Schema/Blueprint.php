@@ -78,18 +78,7 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
      */
     public function dropIndex($indexOrColumns = null)
     {
-        if (is_array($indexOrColumns)) {
-            $indexOrColumns = $this->fluent($indexOrColumns);
-
-            // Transform the columns to the index name.
-            $transform = [];
-
-            foreach ($indexOrColumns as $column) {
-                $transform[$column] = $column . '_1';
-            }
-
-            $indexOrColumns = join('_', $transform);
-        }
+        $indexOrColumns = $this->transformColumns($indexOrColumns);
 
         $this->collection->dropIndex($indexOrColumns);
 
@@ -236,6 +225,25 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
     }
 
     /**
+     * Check whether the given index exists.
+     *
+     * @param  string|array  $indexOrColumns
+     * @return bool
+     */
+    public function hasIndex($indexOrColumns = null)
+    {
+        $indexOrColumns = $this->transformColumns($indexOrColumns);
+
+        foreach ($this->collection->listIndexes() as $index) {
+            if ($index->getName() == $indexOrColumns) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Allow fluent columns.
      *
      * @param  string|array $columns
@@ -250,6 +258,27 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
         } else {
             return $this->columns = $columns;
         }
+    }
+
+    /**
+     * @param $indexOrColumns
+     * @return array|string
+     */
+    private function transformColumns($indexOrColumns)
+    {
+        if (is_array($indexOrColumns)) {
+            $indexOrColumns = $this->fluent($indexOrColumns);
+
+            // Transform the columns to the index name.
+            $transform = [];
+
+            foreach ($indexOrColumns as $column) {
+                $transform[$column] = $column . '_1';
+            }
+
+            $indexOrColumns = join('_', $transform);
+        }
+        return $indexOrColumns;
     }
 
     /**
