@@ -86,6 +86,21 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
     }
 
     /**
+     * Indicate that the given index should be dropped, but do not fail if it didn't exist.
+     *
+     * @param  string|array  $indexOrColumns
+     * @return Blueprint
+     */
+    public function dropIndexIfExists($indexOrColumns = null)
+    {
+        if ($this->hasIndex($indexOrColumns)) {
+            $this->dropIndex($indexOrColumns);
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     public function unique($columns = null, $name = null, $algorithm = null, $options = [])
