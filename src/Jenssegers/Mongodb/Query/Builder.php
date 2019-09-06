@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Jenssegers\Mongodb\Connection;
 use MongoCollection;
+use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectID;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
@@ -201,6 +202,16 @@ class Builder extends BaseBuilder
     public function find($id, $columns = [])
     {
         return $this->where('_id', '=', $this->convertKey($id))->first($columns);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function value($column)
+    {
+        $result = (array) $this->first([$column]);
+
+        return Arr::get($result, $column);
     }
 
     /**
@@ -633,12 +644,6 @@ class Builder extends BaseBuilder
      */
     public function forPageAfterId($perPage = 15, $lastId = 0, $column = '_id')
     {
-        // When using ObjectIDs to paginate, we need to use a hex string as the
-        // "minimum" ID rather than the integer zero so the '$lt' query works.
-        if ($column === '_id' && $lastId === 0) {
-            $lastId = '000000000000000000000000';
-        }
-
         return parent::forPageAfterId($perPage, $lastId, $column);
     }
 
@@ -849,6 +854,8 @@ class Builder extends BaseBuilder
     {
         if (is_string($id) && strlen($id) === 24 && ctype_xdigit($id)) {
             return new ObjectID($id);
+        } elseif (is_string($id) && strlen($id) === 16 && preg_match('~[^\x20-\x7E\t\r\n]~', $id) > 0) {
+            return new Binary($id, Binary::TYPE_UUID);
         }
 
         return $id;

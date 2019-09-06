@@ -2,7 +2,7 @@
 
 class QueueTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -24,6 +24,7 @@ class QueueTest extends TestCase
             'displayName' => 'test',
             'job' => 'test',
             'maxTries' => null,
+            'delay' => null,
             'timeout' => null,
             'data' => ['action' => 'QueueJobLifeCycle'],
         ]), $job->getRawBody());

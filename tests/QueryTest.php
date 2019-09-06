@@ -4,7 +4,7 @@ class QueryTest extends TestCase
 {
     protected static $started = false;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         User::create(['name' => 'John Doe', 'age' => 35, 'title' => 'admin']);
@@ -18,9 +18,10 @@ class QueryTest extends TestCase
         User::create(['name' => 'Error', 'age' => null, 'title' => null]);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         User::truncate();
+        Scoped::truncate();
         parent::tearDown();
     }
 
@@ -308,5 +309,22 @@ class QueryTest extends TestCase
         $this->assertNull($results->first()->title);
         $this->assertEquals(9, $results->total());
         $this->assertEquals(1, $results->currentPage());
+    }
+
+    public function testUpdate()
+    {
+        $this->assertEquals(1, User::where(['name' => 'John Doe'])->update(['name' => 'Jim Morrison']));
+        $this->assertEquals(1, User::where(['name' => 'Jim Morrison'])->count());
+
+        Scoped::create(['favorite' => true]);
+        Scoped::create(['favorite' => false]);
+
+        $this->assertCount(1, Scoped::get());
+        $this->assertEquals(1, Scoped::query()->update(['name' => 'Johnny']));
+        $this->assertCount(1, Scoped::withoutGlobalScopes()->where(['name' => 'Johnny'])->get());
+
+        $this->assertCount(2, Scoped::withoutGlobalScopes()->get());
+        $this->assertEquals(2, Scoped::withoutGlobalScopes()->update(['name' => 'Jimmy']));
+        $this->assertCount(2, Scoped::withoutGlobalScopes()->where(['name' => 'Jimmy'])->get());
     }
 }

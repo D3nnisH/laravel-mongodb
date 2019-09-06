@@ -43,6 +43,8 @@ composer require jenssegers/mongodb
  5.4.x    | 3.2.x
  5.5.x    | 3.3.x
  5.6.x    | 3.4.x
+ 5.7.x    | 3.4.x
+ 5.8.x    | 3.5.x
 
 And add the service provider in `config/app.php`:
 
@@ -482,7 +484,7 @@ User::where('name', 'Jaques')->decrement('weight', 50);
 The number of updated objects is returned:
 
 ```php
-$count = User->increment('age');
+$count = User::increment('age');
 ```
 
 You may also specify additional columns to update:
